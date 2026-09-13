@@ -1,0 +1,17 @@
+{
+  "name": "MindForge",
+  "short_name": "MindForge",
+  "start_url": "./",
+  "display": "standalone",
+  "background_color": "#f8fafc",
+  "theme_color": "#5b21b6",
+  "description": "Treinador pessoal de conhecimento e domínio",
+  "icons": [
+    {
+      "src": "icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
