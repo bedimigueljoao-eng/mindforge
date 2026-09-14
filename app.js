@@ -137,3 +137,62 @@ function progress(){
     `).join("")}
   `;
 }
+
+function profile(){
+  return `
+    <h1>Perfil</h1>
+    <div class="card">
+      <p>Define aqui os teus objetivos e preferências de aprendizagem.</p>
+      <label>Objetivo
+        <input class="input" value="Dominar conteúdos e aplicá-los">
+      </label>
+      <label>Tempo diário
+        <input class="input" value="45 minutos">
+      </label>
+      <label>Meta semanal
+        <input class="input" value="7 horas">
+      </label>
+      <button class="btn" onclick="notify('Preferências guardadas')">
+        Guardar preferências
+      </button>
+    </div>
+  `;
+}
+
+function fmt(seconds){
+  return new Date(seconds * 1000).toISOString().slice(11,19);
+}
+
+function toggleTimer(){
+  state.running = !state.running;
+  render();
+}
+
+setInterval(() => {
+  if(state.running){
+    state.timer++;
+    const timer = document.querySelector("#timer");
+    if(timer) timer.textContent = fmt(state.timer);
+  }
+}, 1000);
+
+function render(){
+  const views = {
+    "Início": dashboard,
+    "Biblioteca": library,
+    "Adicionar": add,
+    "Conhecimento": knowledge,
+    "Treinar": train,
+    "Progresso": progress,
+    "Perfil": profile
+  };
+
+  const view = views[state.page] || dashboard;
+  document.querySelector("#app").innerHTML = shell(view());
+}
+
+if("serviceWorker" in navigator){
+  navigator.serviceWorker.register("./sw.js");
+}
+
+render();
