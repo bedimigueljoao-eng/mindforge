@@ -1,4 +1,4 @@
-const CACHE = 'mindforge-v3-sem-exemplos';
+const CACHE = 'mindforge-v5-funcoes-restauradas';
 
 const FILES = [
   './',

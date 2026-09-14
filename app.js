@@ -196,3 +196,107 @@ if("serviceWorker" in navigator){
 }
 
 render();
+
+function library(){
+  if(!state.materials.length){
+    return `
+      <h1>Biblioteca pessoal</h1>
+
+      <div class="card">
+        <h3>A biblioteca está vazia</h3>
+        <p>
+          Adiciona o teu primeiro PDF, texto, artigo ou vídeo
+          para começar.
+        </p>
+
+        <button class="btn" onclick="go('Adicionar')">
+          Adicionar conteúdo
+        </button>
+      </div>
+    `;
+  }
+
+  return `
+    <h1>Biblioteca pessoal</h1>
+
+    <input
+      class="input"
+      placeholder="Pesquisar conteúdo"
+      oninput="filterMaterials(this.value)"
+    >
+
+    <div id="materials">
+      ${materialsHtml(state.materials)}
+    </div>
+  `;
+}
+
+function materialsHtml(materials){
+  return materials.map(material => `
+    <div class="card material">
+      <h3>${material.title}</h3>
+
+      <small>${material.type || "Conteúdo"}</small>
+
+      <p>
+        Progresso de leitura:
+        <b>${material.read || 0}%</b>
+      </p>
+
+      ${bar(material.read || 0)}
+
+      <p>
+        Nível de domínio:
+        <b>${material.mastery || 0}%</b>
+      </p>
+
+      ${bar(material.mastery || 0)}
+
+      <button
+        class="btn"
+        onclick="go('Conhecimento')"
+      >
+        Abrir conteúdo
+      </button>
+    </div>
+  `).join("");
+}
+
+function filterMaterials(searchText){
+  const area = document.querySelector("#materials");
+
+  if(!area) return;
+
+  const filteredMaterials = state.materials.filter(material =>
+    material.title
+      .toLowerCase()
+      .includes(searchText.toLowerCase())
+  );
+
+  area.innerHTML = filteredMaterials.length
+    ? materialsHtml(filteredMaterials)
+    : `
+        <div class="card">
+          <p>Nenhum conteúdo encontrado.</p>
+        </div>
+      `;
+}
+
+function train(){
+  return `
+    <h1>Treinar</h1>
+
+    <div class="card">
+      <h3>Nenhum treino disponível</h3>
+
+      <p>
+        Os testes, exercícios, flashcards e revisões aparecerão
+        depois do processamento real dos conteúdos.
+      </p>
+
+      <button class="btn" onclick="go('Biblioteca')">
+        Abrir biblioteca
+      </button>
+    </div>
+  `;
+}
