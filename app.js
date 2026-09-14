@@ -10,48 +10,130 @@ const save=()=>localStorage.setItem('mf_materials',JSON.stringify(state.material
 function bar(v){return `<div class="bar"><i style="width:${v}%"></i></div>`}function go(p){state.page=p;render()}function tab(t){state.tab=t;render()}function notify(t){let n=document.createElement('div');n.className='notice';n.textContent=t;document.body.appendChild(n);setTimeout(()=>n.remove(),2200)}
 function shell(content){return `<div class="app"><header class="top"><div class="brand">🧠 MindForge</div><span class="subtitle">Conteúdo → conhecimento → aplicação → domínio</span><div class="spacer"></div><button class="btn" onclick="go('Adicionar')">+ Adicionar</button></header><div class="layout"><aside class="side">${nav.map(n=>`<button class="${state.page===n?'active':''}" onclick="go('${n}')">${n}</button>`).join('')}</aside><main class="main">${content}</main></div><nav class="bottom">${['Início','Biblioteca','Adicionar','Treinar','Progresso'].map(n=>`<button onclick="go('${n}')">${n}</button>`).join('')}</nav></div>`}
 function dashboard(){
-if(!state.materials.length)return `
-<section class="hero">
-  <small>🧠 BEM-VINDO AO MINDFORGE</small>
-  <h1>Transforma conteúdos em conhecimento utilizável.</h1>
-  <p>Adiciona o teu primeiro PDF, texto, artigo ou vídeo para começar.</p>
-  <button class="btn alt" onclick="go('Adicionar')">Adicionar conteúdo</button>
-</section>
+  const total = state.materials.length;
 
-<div class="grid">
-  <div class="card stat"><strong>0</strong><div>Conteúdos</div></div>
-  <div class="card stat"><strong>0</strong><div>Revisões</div></div>
-  <div class="card stat"><strong>0h00</strong><div>Tempo</div></div>
-  <div class="card stat"><strong>0%</strong><div>Domínio</div></div>
-</div>
+  return `
+    <section class="hero">
+      <small>🧠 MINDFORGE</small>
 
-<div class="card" style="margin-top:18px">
-  <h3>Ainda não existem dados de estudo</h3>
-  <p>Os conceitos, revisões, mapas, testes e níveis de domínio aparecerão depois de adicionares e estudares conteúdos reais.</p>
-</div>`;
-return `<section class="hero"><small>🔥 TREINO DE HOJE</small><h1>O que consegues fazer com aquilo que estudaste?</h1><p>Gestão de Pessoas: 3 conceitos para rever, 5 perguntas e 1 caso prático.</p><button class="btn alt" onclick="go('Treinar')">Começar treino</button></section><div class="grid">${[['Conteúdos','3'],['Revisões','7'],['Tempo','5h24'],['Domínio','67%']].map(x=>`<div class="card stat"><strong>${x[1]}</strong><div>${x[0]}</div></div>`).join('')}</div><div class="grid" style="grid-template-columns:1fr 1fr"><div class="card"><h3>Conceitos dominados</h3>${[['Recrutamento',92],['Seleção',84],['Entrevistas',61]].map(x=>`<p>${x[0]} <b>${x[1]}%</b></p>${bar(x[1])}`).join('')}</div><div class="card"><h3>⚠️ Precisa de atenção</h3><p>Avaliação de desempenho: 45%</p><p>Entrevistas por competências: 52%</p><p>Métricas de retenção: 48%</p></div></div>`}
-function library(){return `<h1>Biblioteca pessoal</h1><input class="input" placeholder="Pesquisar" oninput="filterMaterials(this.value)"><div id="materials">${materialsHtml(state.materials)}</div>`}function materialsHtml(a){return a.map(m=>`<div class="card material"><h3>${m.title}</h3><small>${m.type}</small><p>Leitura: ${m.read}%</p>${bar(m.read)}<p>Domínio: ${m.mastery}%</p>${bar(m.mastery)}<button class="btn" onclick="go('Conhecimento')">Abrir ficha</button></div>`).join('')}function filterMaterials(q){document.querySelector('#materials').innerHTML=materialsHtml(state.materials.filter(m=>m.title.toLowerCase().includes(q.toLowerCase())))}
+      <h1>
+        ${
+          total
+            ? "Continua o teu percurso de aprendizagem."
+            : "Transforma conteúdos em conhecimento utilizável."
+        }
+      </h1>
+
+      <p>
+        ${
+          total
+            ? `Tens ${total} conteúdo${total === 1 ? "" : "s"} na biblioteca.`
+            : "Adiciona o teu primeiro PDF, texto, artigo ou vídeo para começar."
+        }
+      </p>
+
+      <button
+        class="btn alt"
+        onclick="go('${total ? "Biblioteca" : "Adicionar"}')"
+      >
+        ${total ? "Abrir biblioteca" : "Adicionar conteúdo"}
+      </button>
+    </section>
+
+    <div class="grid">
+      <div class="card stat">
+        <strong>${total}</strong>
+        <div>Conteúdos</div>
+      </div>
+
+      <div class="card stat">
+        <strong>0</strong>
+        <div>Revisões</div>
+      </div>
+
+      <div class="card stat">
+        <strong>0h00</strong>
+        <div>Tempo estudado</div>
+      </div>
+
+      <div class="card stat">
+        <strong>0%</strong>
+        <div>Domínio</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:18px">
+      <h3>
+        ${
+          total
+            ? "Próximo passo"
+            : "Ainda não existem dados de aprendizagem"
+        }
+      </h3>
+
+      <p>
+        ${
+          total
+            ? "Abre um conteúdo para iniciar a leitura, análise e treino."
+            : "Os conceitos, dificuldades, revisões, mapas, testes e níveis de domínio aparecerão apenas depois de adicionares e estudares conteúdos reais."
+        }
+      </p>
+    </div>
+  `;
+}
+``
 function add(){return `<h1>Adicionar conteúdo</h1><div class="card"><select id="type" class="input"><option>PDF</option><option>Texto</option><option>Artigo</option><option>YouTube</option></select><input id="title" class="input" placeholder="Título ou link"><input id="file" class="input" type="file" accept=".pdf,.txt,.epub"><textarea id="text" class="input" rows="6" placeholder="Cola aqui o texto, quando aplicável"></textarea><button class="btn" onclick="analyze()">✨ Analisar conteúdo</button><p><small>Na versão local, o material é registado no dispositivo. A análise por IA exigirá ligação segura a um serviço externo.</small></p></div>`}function analyze(){let t=document.querySelector('#title').value.trim()||'Novo conteúdo';let type=document.querySelector('#type').value;state.materials.unshift({id:Date.now(),title:t,type,read:0,mastery:0});save();notify('Conteúdo guardado e preparado para análise');go('Biblioteca')}
 function knowledge(){
-if(!state.materials.length)return `
-<div class="card">
-  <h2>Centro de conhecimento vazio</h2>
-  <p>Adiciona um conteúdo para gerar informações essenciais, mapas, fluxogramas, testes, aplicações práticas e revisões.</p>
-  <button class="btn" onclick="go('Adicionar')">Adicionar primeiro conteúdo</button>
-</div>`;
-let body={Essencial:`<div class="card"><h2>O que realmente precisas aprender?</h2><div class="priority red"><b>Essencial</b><p>Recrutamento, seleção, avaliação e retenção.</p></div><div class="priority orange"><b>Importante</b><p>Cultura, competências e motivação.</p></div><div class="priority green"><b>Complementar</b><p>Contexto e exemplos adicionais.</p></div></div>`,Leitura:`<div class="card"><h2>Leitura guiada</h2><p>Gestão de pessoas envolve atrair, desenvolver, motivar e reter profissionais. <mark>O recrutamento influencia a qualidade da seleção.</mark></p><div class="row"><button class="btn alt" onclick="notify('Trecho destacado')">Destacar</button><button class="btn alt" onclick="notify('Anotação guardada')">Anotar</button><button class="btn alt" onclick="notify('Explicação preparada')">Explica isto</button></div><p><button class="btn" onclick="toggleTimer()">${state.running?'Pausar':'Iniciar'} leitura</button><span class="timer" id="timer">${fmt(state.timer)}</span></p></div>`,Mapa:`<div class="card"><h2>Mapa de conhecimento</h2><div class="map"><div class="node center">Recursos Humanos</div><div class="node n1">Recrutamento</div><div class="node n2">Desenvolvimento</div><div class="node n3">Retenção</div><div class="node n4">Desempenho</div></div><p>Recrutamento → influencia → Seleção · Motivação → favorece → Retenção</p></div>`,Fluxogramas:`<div class="card"><h2>Fluxograma: Recrutamento</h2><div class="flow">${['Necessidade de contratação','Definição do perfil','Divulgação da vaga','Receção de candidaturas','Triagem','Entrevista','Avaliação','Seleção','Contratação'].map((s,i,a)=>`<div class="step">${s}</div>${i<a.length-1?'<div class="arrow">↓</div>':''}`).join('')}</div></div>`,'Professor IA':teacher(),Testes:quiz(),Aplicação:`<div class="card"><h2>Caso prático</h2><p>Uma empresa precisa contratar 15 trabalhadores em 30 dias. Cria um processo com critérios, responsáveis, prazos e riscos.</p><textarea class="input" rows="10" placeholder="Escreve a tua solução"></textarea><button class="btn" onclick="notify('Resposta guardada para avaliação')">Avaliar resposta</button></div>`,Revisão:`<div class="grid" style="grid-template-columns:repeat(3,1fr)"><div class="card red">Rever hoje<br><b>3 conceitos</b></div><div class="card orange">Rever amanhã<br><b>4 conceitos</b></div><div class="card green">Em 7 dias<br><b>8 conceitos</b></div></div>`,Complementar:`<div class="card"><h2>Conteúdo complementar</h2><p>• Herzberg</p><p>• Teoria da autodeterminação</p><p>• Cultura e retenção</p><small>As fontes externas serão apresentadas e validadas quando o serviço online estiver ligado.</small></div>`}[state.tab];return `<h1>Centro de conhecimento</h1><div class="tabs">${tabs.map(t=>`<button class="${state.tab===t?'active':''}" onclick="tab('${t}')">${t}</button>`).join('')}</div>${body}`}
-function teacher(){return `<div class="card"><h2>Professor IA</h2><div id="reply" class="priority green">Seleciona uma ação ou escreve uma pergunta.</div><div class="row">${['Explica-me','Aprofunda','Relaciona','Forma simples','Nível universitário','Faz-me pensar'].map(x=>`<button class="btn alt" onclick="teacherAction('${x}')">${x}</button>`).join('')}</div><input id="question" class="input" placeholder="Conversa com o conteúdo"><button class="btn" onclick="teacherAction(document.querySelector('#question').value)">Enviar</button></div>`}function teacherAction(x){document.querySelector('#reply').textContent=x?`Pedido recebido: ${x}. A resposta completa será produzida quando a IA segura estiver ligada.`:'Escreve uma pergunta.'}
-function quiz(){return `<div class="card"><h2>Qual etapa antecede a divulgação de uma vaga?</h2>${['Contratação','Definição do perfil','Entrevista','Retenção'].map((x,i)=>`<button class="option" onclick="check(this,${i})">${String.fromCharCode(65+i)}. ${x}</button>`).join('')}<div id="feedback"></div></div>`}function check(el,i){document.querySelectorAll('.option').forEach(x=>x.classList.remove('good','bad'));el.classList.add(i===1?'good':'bad');document.querySelector('#feedback').innerHTML=`<p><b>${i===1?'Correto.':'Ainda não.'}</b> Primeiro define-se o perfil.</p>`}
-function train(){return `<h1>Treinar</h1><div class="grid" style="grid-template-columns:repeat(3,1fr)">${[['Testar-me','Testes'],['Aplicação prática','Aplicação'],['Revisão inteligente','Revisão'],['Desafio cognitivo','Testes'],['Comunicação','Professor IA'],['Flashcards','Revisão']].map(x=>`<button class="card" onclick="state.tab='${x[1]}';go('Conhecimento')"><h3>${x[0]}</h3><p>Prática progressiva por conceito.</p></button>`).join('')}</div>`}
+const material=state.materials[0];
+if(!material)return `<h1>Centro de conhecimento</h1><div class="card"><h2>Nenhum conteúdo disponível</h2><p>Adiciona um conteúdo para começar.</p><button class="btn" onclick="go('Adicionar')">Adicionar conteúdo</button></div>`;
+return `<h1>Centro de conhecimento</h1><div class="card"><h2>${material.title}</h2><p>Este conteúdo foi guardado, mas ainda não possui análise inteligente real.</p><div class="priority orange"><b>Análise pendente</b><p>Os conceitos, mapas, fluxogramas, testes, aplicações e revisões aparecerão apenas depois do processamento real deste conteúdo.</p></div></div>`;
+}
 function progress(){
-if(!state.materials.length)return `
-<h1>Progresso</h1>
-<div class="card">
-  <h3>Sem dados de progresso</h3>
-  <p>O progresso de leitura e o domínio serão calculados depois de adicionares e estudares conteúdos.</p>
-</div>`;
-return `<h1>Progresso</h1><div class="grid" style="grid-template-columns:1fr 1fr"><div class="card"><h3>Gestão de Pessoas</h3><p>Leitura 78%</p>${bar(78)}<p>Domínio 67%</p>${bar(67)}</div><div class="card"><h3>Por conceito</h3>${[['Recrutamento',92],['Seleção',84],['Entrevistas',61],['Avaliação',45]].map(x=>`<p>${x[0]}: <b>${x[1]}%</b></p>${bar(x[1])}`).join('')}</div></div>`}
-function profile(){return `<h1>Perfil</h1><div class="card"><label>Objetivo<input class="input" value="Dominar conteúdos e aplicá-los"></label><label>Tempo diário<input class="input" value="45 minutos"></label><label>Meta semanal<input class="input" value="7 horas"></label><label>Idioma<select class="input"><option>Português</option><option>Inglês</option></select></label><button class="btn" onclick="notify('Preferências guardadas localmente')">Guardar preferências</button></div>`}
-function fmt(s){return new Date(s*1000).toISOString().slice(11,19)}function toggleTimer(){state.running=!state.running;render()}setInterval(()=>{if(state.running){state.timer++;let t=document.querySelector('#timer');if(t)t.textContent=fmt(state.timer)}},1000);
-function render(){let c={Início:dashboard,Biblioteca:library,Adicionar:add,Conhecimento:knowledge,Treinar:train,Progresso:progress,Perfil:profile}[state.page]();document.querySelector('#app').innerHTML=shell(c)}
-if('serviceWorker'in navigator)navigator.serviceWorker.register('./sw.js');render();
+  if(!state.materials.length){
+    return `
+      <h1>Progresso</h1>
+
+      <div class="card">
+        <h3>Sem dados de progresso</h3>
+
+        <p>
+          O progresso de leitura e o domínio aparecerão depois
+          de adicionares e estudares conteúdos reais.
+        </p>
+      </div>
+    `;
+  }
+
+  return `
+    <h1>Progresso</h1>
+
+    ${state.materials.map(material => `
+      <div class="card material">
+        <h3>${material.title}</h3>
+
+        <small>${material.type || "Conteúdo"}</small>
+
+        <p>
+          Progresso de leitura:
+          <b>${material.read || 0}%</b>
+        </p>
+
+        ${bar(material.read || 0)}
+
+        <p>
+          Nível de domínio:
+          <b>${material.mastery || 0}%</b>
+        </p>
+
+        ${bar(material.mastery || 0)}
+
+        <p>
+          <small>
+            O domínio será calculado com base nos testes,
+            exercícios práticos e revisões realizados.
+          </small>
+        </p>
+      </div>
+    `).join("")}
+  `;
+}

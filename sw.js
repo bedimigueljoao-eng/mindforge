@@ -1,4 +1,4 @@
-const CACHE = 'mindforge-v2-limpo';
+const CACHE = 'mindforge-v3-sem-exemplos';
 
 const FILES = [
   './',
